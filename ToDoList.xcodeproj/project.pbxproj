@@ -69,9 +69,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9CA70A9B2E5257AD0016E87E /* docs */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
 		9CC9F1212E4B2F8F00FBBE37 = {
 			isa = PBXGroup;
 			children = (
+				9CA70A9B2E5257AD0016E87E /* docs */,
 				9CA70A992E524BC60016E87E /* README.md */,
 				9CCB9BE32E4DE19A00141E84 /* TaskModel+CoreDataClass.swift */,
 				9CCB9BE42E4DE19A00141E84 /* TaskModel+CoreDataProperties.swift */,
