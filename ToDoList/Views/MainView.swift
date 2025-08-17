@@ -10,6 +10,7 @@ import CoreData
 
 struct MainView: View {
     @StateObject private var viewModel: ViewModel
+    // comment
     
     init(context: NSManagedObjectContext) {
         _viewModel = StateObject(wrappedValue: ViewModel(context: context))
