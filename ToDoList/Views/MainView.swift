@@ -9,10 +9,10 @@ import SwiftUI
 import CoreData
 
 struct MainView: View {
-    @StateObject private var viewModel: ViewModel
+    @StateObject private var viewModel: MainViewModel
     
     init(context: NSManagedObjectContext) {
-        _viewModel = StateObject(wrappedValue: ViewModel(context: context))
+        _viewModel = StateObject(wrappedValue: MainViewModel(context: context))
     }
     
     var body: some View {
@@ -22,13 +22,27 @@ struct MainView: View {
             
             VStack{
                 List {
-                    ForEach(viewModel.filteredTasks, id: \.id) { task in
+                    ForEach(viewModel.tasksForRows, id: \.id) { task in
                         NavigationLink {
-                            TaskDetailView(task: task)
-                                .environmentObject(viewModel)
+                            TaskDetailView(
+                                task: task,
+                                isEditMode: viewModel.isEditingTask,
+                                title: $viewModel.titleForDetailView,
+                                entry: $viewModel.entryForDetailView,
+                                onSave: {
+                                    viewModel.saveTask(taskId: task.id, title: viewModel.titleForDetailView, entry: viewModel.entryForDetailView)
+                                }
+                            )
                         } label: {
-                            TaskRow(task: task)
-                                .environmentObject(viewModel)
+                            TaskRow(
+                                data: task,
+                                onToggleCompleted: { viewModel.toggleTaskCompletion(taskId: task.id)},
+                                onDelete: {viewModel.deleteTask(taskId: task.id)},
+                                onEdit: {
+                                    // passing existing task to edit
+                                    viewModel.startEditingTask(taskId: task.id)
+                                }
+                            )
                         }
                     }
                 }
@@ -44,15 +58,25 @@ struct MainView: View {
             .toolbar {
                 ToolbarItem(placement: .bottomBar) {
                     BottomToolbar(text: viewModel.tasksCountString()) {
-                        viewModel.isEditingTask = true
+                        viewModel.isEditingTask.toggle()
                     }
                 }
             }
             .navigationDestination(isPresented: $viewModel.isEditingTask) {
                 // passing nil to add new task in the view
-                // passing existing task to edit
-                TaskDetailView(task: viewModel.taskToEdit)
-                    .environmentObject(viewModel)
+                TaskDetailView(
+                    task: viewModel.selectedTaskToEdit,
+                    isEditMode: viewModel.isEditingTask,
+                    title: $viewModel.titleForDetailView,
+                    entry: $viewModel.entryForDetailView,
+                    onSave: {
+                        viewModel.saveTask(
+                            taskId: viewModel.selectedTaskToEdit?.id,
+                            title: viewModel.titleForDetailView,
+                            entry: viewModel.entryForDetailView
+                        )
+                    }
+                )
             }
         }
     }

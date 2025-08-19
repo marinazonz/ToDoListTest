@@ -80,13 +80,13 @@
 			isa = PBXGroup;
 			children = (
 				9CA70A9B2E5257AD0016E87E /* docs */,
-				9CA70A992E524BC60016E87E /* README.md */,
 				9CCB9BE32E4DE19A00141E84 /* TaskModel+CoreDataClass.swift */,
 				9CCB9BE42E4DE19A00141E84 /* TaskModel+CoreDataProperties.swift */,
 				9CC9F12C2E4B2F8F00FBBE37 /* ToDoList */,
 				9CC9F13F2E4B2F9100FBBE37 /* ToDoListTests */,
 				9CC9F1492E4B2F9100FBBE37 /* ToDoListUITests */,
 				9CC9F12B2E4B2F8F00FBBE37 /* Products */,
+				9CA70A992E524BC60016E87E /* README.md */,
 			);
 			sourceTree = "<group>";
 		};

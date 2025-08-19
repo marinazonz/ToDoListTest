@@ -6,45 +6,45 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct TaskRow: View {
-    var task: TaskModel
-    @EnvironmentObject var viewModel: ViewModel
+    var data: TaskRowViewData
+    let onToggleCompleted: () -> Void
+    let onDelete: () -> Void
+    let onEdit: () -> Void
     
     var body: some View {
         HStack (alignment: .top) {
                 Button {
-                    viewModel.toggleTaskCompletion(task)
+                    onToggleCompleted()
                 } label: {
-                    Image(systemName: task.completed ? "checkmark.circle" : "circle")
+                    Image(systemName: data.completed ? "checkmark.circle" : "circle")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 25, height: 25)
-                        .foregroundStyle(task.completed ? .accent : .secondary)
+                        .foregroundStyle(data.completed ? .accent : .secondary)
                         .contentTransition(.symbolEffect(.replace))
                 }
                 .buttonStyle(.plain)
             
             VStack(alignment: .leading, spacing: 5){
-                Text(task.displayTitle)
+                Text(data.title)
                     .font(.title2)
-                    .strikethrough(task.completed ? true : false)
+                    .strikethrough(data.completed ? true : false)
                 
-                Text(task.wrappedEntry)
-                Text(viewModel.dateFormatter.string(from: task.wrappedDate))
+                Text(data.entry)
+                
+                Text(data.formattedDate)
                     .font(.subheadline)
             }
-            .foregroundStyle(task.completed ? .secondary : .primary)
+            .foregroundStyle(data.completed ? .secondary : .primary)
             .transition(.opacity)
             
         }
-        .animation(.bouncy, value: task.completed)
+        .animation(.bouncy, value: data.completed)
         .contextMenu {
             Button {
-                // edit
-                viewModel.taskToEdit = task
-                viewModel.isEditingTask = true
+                onEdit()
             } label: {
                 HStack{
                     Text("Редактировать")
@@ -70,7 +70,7 @@ struct TaskRow: View {
             }
 
             Button(role: .destructive) {
-                viewModel.deleteTask(task)
+                onDelete()
             } label: {
                 HStack{
                     Text("Удалить")
@@ -87,17 +87,5 @@ struct TaskRow: View {
 }
 
 #Preview {
-    let context = PersistenceController.preview.container.viewContext
-        
-        // Create a sample task in the preview's in-memory Core Data
-        let sampleTask = TaskModel(context: context)
-        sampleTask.id = 123
-        sampleTask.title = "Preview Task"
-        sampleTask.entry = "This is just a preview entry."
-        sampleTask.dateCreated = .now
-        sampleTask.completed = false
-        
-    return TaskRow(task: sampleTask)
-        .environmentObject(ViewModel(context: context))
-        .environment(\.managedObjectContext, context)
+    TaskRow(data: TaskRowViewData.mock, onToggleCompleted: {}, onDelete: {}, onEdit: {})
 }
