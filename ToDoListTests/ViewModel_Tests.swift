@@ -10,13 +10,13 @@ import XCTest
 import CoreData
 
 final class ViewModel_Tests: XCTestCase {
-    var viewModel: ViewModel!
+    var viewModel: MainViewModel!
     var context: NSManagedObjectContext!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         context = Self.inMemoryContext()
-        viewModel = ViewModel(context: context)
+        viewModel = MainViewModel(context: context)
     }
 
     override func tearDownWithError() throws {
@@ -46,90 +46,59 @@ final class ViewModel_Tests: XCTestCase {
         // When
         let id = viewModel.generateNewId()
         // Then
-        XCTAssertNotEqual(id, 3)
+        XCTAssertEqual(id, 3)
     }
     
     func testSaveTask_addsNewTask() {
         // Given
-        let expectation = XCTestExpectation(description: "Task should be created")
         let initialCount = viewModel.filteredTasks.count
         // When
         viewModel.saveTask(taskId: nil, title: "Test Task", entry: "Test Entry")
         // Then
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            XCTAssertEqual(self.viewModel.filteredTasks.count, initialCount + 1)
-            XCTAssertEqual(self.viewModel.filteredTasks.last?.title, "Test Task")
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        XCTAssertEqual(self.viewModel.filteredTasks.count, initialCount + 1)
+        XCTAssertEqual(self.viewModel.filteredTasks.last?.title, "Test Task")
     }
 
     func testSaveTask_editsExistingTask() {
         // Given
-        let expectation = XCTestExpectation(description: "Task should be edited")
         viewModel.saveTask(taskId: nil, title: "Test Task", entry: "Test Entry")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // When
-            guard let taskToEdit = self.viewModel.filteredTasks.first else {
-                XCTFail("No task created")
-                expectation.fulfill()
-                return
-            }
-            self.viewModel.saveTask(taskId: taskToEdit.id, title: "Updated", entry: "Updated Entry")
-            
-            // Then
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                XCTAssertEqual(self.viewModel.filteredTasks.first?.title, "Updated")
-                expectation.fulfill()
-            }
+        // When
+        guard let taskToEdit = self.viewModel.filteredTasks.first else {
+            XCTFail("No task created")
+            return
         }
+        self.viewModel.saveTask(taskId: taskToEdit.id, title: "Updated", entry: "Updated Entry")
         
-        wait(for: [expectation], timeout: 2.0)
+        // Then
+        XCTAssertEqual(self.viewModel.filteredTasks.first?.title, "Updated")
     }
     func testToggleTaskCompletion_marksTaskAsComplete() {
         // Given
-        let expectation = XCTestExpectation(description: "Task should be completed")
         viewModel.saveTask(taskId: nil, title: "Test Task", entry: "Test Entry")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // When
-            guard let taskToToggle = self.viewModel.filteredTasks.first else {
-                XCTFail("No task created")
-                expectation.fulfill()
-                return
-            }
-            
-            self.viewModel.toggleTaskCompletion(taskToToggle)
-            
-            // Then
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                XCTAssertEqual(self.viewModel.filteredTasks.first?.completed, true)
-                expectation.fulfill()
-            }
+        // When
+        guard let taskToToggle = self.viewModel.filteredTasks.first else {
+            XCTFail("No task created")
+            return
         }
+        
+        self.viewModel.toggleTaskCompletion(taskId: taskToToggle.id)
+        
+        // Then
+        XCTAssertEqual(self.viewModel.filteredTasks.first?.completed, true)
     }
     
     func testDeleteTask_deletesTaskFromStore() {
         // Given
-        let expectation = XCTestExpectation(description: "Task should be deleted")
         viewModel.saveTask(taskId: nil, title: "Test Task", entry: "Test Entry")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // When
-            guard let taskToDelete = self.viewModel.filteredTasks.first else {
-                XCTFail("No task created")
-                expectation.fulfill()
-                return
-            }
-            
-            self.viewModel.deleteTask(taskToDelete)
-            
-            // Then
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                XCTAssertEqual(self.viewModel.filteredTasks.isEmpty, true)
-                expectation.fulfill()
-            }
+        // When
+        guard let taskToDelete = self.viewModel.filteredTasks.first else {
+            XCTFail("No task created")
+            return
         }
+        
+        self.viewModel.deleteTask(taskId: taskToDelete.id)
+        
+        // Then
+        XCTAssertEqual(self.viewModel.filteredTasks.isEmpty, true)
     }
-    
-    
 }

@@ -17,6 +17,9 @@ final class MainViewModel: ObservableObject {
     @Published var selectedTaskToEdit: TaskRowViewData? = nil
     @Published var isEditingTask: Bool = false
     @Published var searchText: String = ""
+//    @Published var searchText: String = "" {
+//        didSet { updateFilteredTasks() }
+//    }
     
     // Properties for DetailView
     @Published var titleForDetailView: String = ""
